@@ -4,7 +4,7 @@ import './Nav.css';
 export default function Nav() {
     const [show, handleShow] = useState(false);
 
-    const transitionForNavBar = () => {
+    const transitionNavBar = () => {
         if (window.scrollY > 100) {
             handleShow(true)
         } else {
@@ -13,12 +13,12 @@ export default function Nav() {
     }
 
     useEffect(() => {
-        window.addEventListener('scroll', transitionForNavBar);
-        return () => window.removeEventListener('scroll', transitionForNavBar)
+        window.addEventListener('scroll', transitionNavBar);
+        return () => window.removeEventListener('scroll', transitionNavBar)
     },[])
 
     return (
-        <div className={`nav ${show && 'nav_black'}`}>
+        <div className={`nav ${show && "nav__black"}`}>
             <div className="nav__contents">
                 <img
                     className='nav__logo'
