@@ -2,43 +2,52 @@ import React, {useEffect} from 'react';
 import './App.css';
 import HomeScreen from "./screens/HomeScreen/HomeScreen";
 import {
-    createBrowserRouter,
-    RouterProvider,
+    BrowserRouter as Router,
+    Switch,
+    Route
 } from "react-router-dom";
 import LoginScreen from "./screens/LoginScreen/LoginScreen";
 import {auth} from "./firebase";
+import {useDispatch, useSelector} from "react-redux";
+import {login, logout, selectUser} from "./features/UserSlice";
+import ProfileScreen from "./screens/ProfileScreen/ProfileScreen";
 
 function App() {
-    const user = null;
+    const user = useSelector(selectUser);
+    const dispatch = useDispatch()
 
     useEffect(() => {
-       const unsubscribe =  auth.onAuthStateChanged(userAuth => {
+        const unsubscribe = auth.onAuthStateChanged(userAuth => {
             if (userAuth) {
-
+                dispatch(login({
+                    uid: userAuth.uid,
+                    email: userAuth.email
+                }))
             } else {
-
+                dispatch(logout())
             }
         })
         return () => {
-           unsubscribe()
+            unsubscribe()
         }
-
-    },[])
-
-    const router = createBrowserRouter([
-        {
-            path: "/",
-            element: <div className='app'><HomeScreen/></div>,
-        },
-        {
-            path: '/login',
-            element: <div><LoginScreen/></div>
-        }
-    ]);
+    }, [dispatch])
 
     return (
-        <div>
-            <RouterProvider router={router} />
+        <div className='app'>
+           <Router>
+               {!user ? (
+               <LoginScreen/>
+               ) : (
+                   <Switch>
+                       <Route path='/profile'>
+                            <ProfileScreen/>
+                       </Route>
+                       <Route exact path='/'>
+                           <HomeScreen/>
+                       </Route>
+                   </Switch>
+               )}
+           </Router>
         </div>
     );
 }
